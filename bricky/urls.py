@@ -6,8 +6,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('store.urls')),  # Lego store is now the main landing page
-    path('dashboard/', include('core.urls')),  # Core dashboard moved to /dashboard
+    path('', include('core.urls')),  # Core app now handles all main routes
     path('notifications/', include('notifications.urls')),
     path('orders/', include('orders.urls')),
     path('users/', include('users.urls')),

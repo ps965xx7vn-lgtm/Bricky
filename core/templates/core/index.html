@@ -1,55 +1,9 @@
+{% extends 'core/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bricky | LEGO Store - Build & Create</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'store/css/lego.css' %}">
-</head>
-<body>
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <div class="container">
-            <span class="promo-text">Free Shipping on Orders Over $50</span>
-            <div class="top-links">
-                <a href="/admin">Account</a>
-                <span class="separator">|</span>
-                <a href="#help">Help</a>
-            </div>
-        </div>
-    </div>
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <span class="brand-name">BRICKY</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="/">Shop</a></li>
-                <li><a href="#categories">Categories</a></li>
-                <li><a href="#new">New Releases</a></li>
-                <li><a href="#about">About</a></li>
-            </ul>
-            <div class="nav-right">
-                <a href="#search" class="search-btn">
-                    <i class="fas fa-search"></i>
-                </a>
-                <a href="#cart" class="cart-btn">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
-            </div>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
+{% block title %}Bricky | LEGO Store - Build & Create{% endblock %}
 
+{% block content %}
     <!-- Hero Banner -->
     <section class="hero">
         <div class="hero-image">
@@ -128,9 +82,9 @@
                 {% endif %}
             </div>
 
-            {% if products %}
+            {% if object_list %}
             <div class="products-grid">
-                {% for product in products %}
+                {% for product in object_list %}
                 <a href="{{ product.get_absolute_url }}" class="product-card">
                     <div class="product-image">
                         {% if product.picture %}
@@ -198,7 +152,7 @@
                 <i class="fas fa-search"></i>
                 <h3>No products found</h3>
                 <p>Try adjusting your filters</p>
-                <a href="/" class="btn-primary">Clear Filters</a>
+                <a href="{% url 'core:index' %}" class="btn-primary">Clear Filters</a>
             </div>
             {% endif %}
         </div>
@@ -304,78 +258,4 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h4>Shop</h4>
-                    <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="#products">All Products</a></li>
-                        <li><a href="#categories">Categories</a></li>
-                        <li><a href="#">New Releases</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Customer Service</h4>
-                    <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Shipping Info</a></li>
-                        <li><a href="#">Returns</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>About</h4>
-                    <ul>
-                        <li><a href="#">About Bricky</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Sustainability</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Connect</h4>
-                    <div class="social-links">
-                        <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
-                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Bricky LEGO Store. All rights reserved.</p>
-                <div class="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Cookie Settings</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Shopping Cart Sidebar -->
-    <div class="cart-sidebar" id="cart-sidebar">
-        <div class="cart-header">
-            <h3>Shopping Bag</h3>
-            <button class="close-cart" onclick="toggleCart()">✕</button>
-        </div>
-        <div class="cart-items" id="cart-items">
-            <p class="empty-cart">Your bag is empty</p>
-        </div>
-        <div class="cart-footer">
-            <button class="btn-primary" onclick="checkout()">Checkout</button>
-        </div>
-    </div>
-
-    <!-- Back to Top Button -->
-    <button class="back-to-top" id="back-to-top" onclick="backToTop()">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
-    <script src="{% static 'store/js/lego.js' %}"></script>
-</body>
-</html>
+{% endblock %}

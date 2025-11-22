@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Bricky LEGO Store{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'users/users.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-wrapper">
+        <div class="profile-header">
+            <img src="{{ user.picture.url }}" alt="{{ user.username }}" class="profile-avatar">
+            <div class="profile-info">
+                <h2>{{ user.get_full_name|default:user.username }}</h2>
+                <p><i class="fas fa-envelope"></i> {{ user.email }}</p>
+                {% if user.phone %}
+                <p><i class="fas fa-phone"></i> {{ user.phone }}</p>
+                {% endif %}
+                {% if user.email_is_verified %}
+                <span class="badge"><i class="fas fa-check-circle"></i> Email Verified</span>
+                {% else %}
+                <span class="badge" style="background: #ffc107;"><i class="fas fa-exclamation-circle"></i> Email Pending</span>
+                {% endif %}
+                <div class="profile-actions">
+                    <a href="{% url 'users:profile_edit' %}" class="btn-primary">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                    <a href="{% url 'users:logout' %}" class="btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h3>Account Information</h3>
+            <div class="profile-grid">
+                <div class="profile-field">
+                    <label>Username</label>
+                    <p>{{ user.username }}</p>
+                </div>
+                <div class="profile-field">
+                    <label>Email</label>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div class="profile-field">
+                    <label>First Name</label>
+                    <p>{{ user.first_name|default:"Not set" }}</p>
+                </div>
+                <div class="profile-field">
+                    <label>Last Name</label>
+                    <p>{{ user.last_name|default:"Not set" }}</p>
+                </div>
+                <div class="profile-field">
+                    <label>Phone Number</label>
+                    <p>{{ user.phone|default:"Not set" }}</p>
+                </div>
+                <div class="profile-field">
+                    <label>Member Since</label>
+                    <p>{{ user.date_joined|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h3>Recent Orders</h3>
+            <div style="text-align: center; padding: 40px; color: #999;">
+                <i class="fas fa-box" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                <p>No orders yet. <a href="{% url 'core:index' %}">Start shopping</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'users/users.js' %}"></script>
+{% endblock %}
