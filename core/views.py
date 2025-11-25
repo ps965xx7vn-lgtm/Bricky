@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, TemplateView
 from django.db.models import Count, Sum, Q
 from django.utils import timezone
+from django.http import JsonResponse
 from datetime import timedelta
+import json
 
 from users.models import CustomUser
 from orders.models import Order, Customer
@@ -100,3 +102,105 @@ class CookieSettingsView(TemplateView):
     View for displaying the Cookie Settings page
     """
     template_name = 'core/cookie_settings.html'
+
+
+class SearchView(ListView):
+    """
+    Comprehensive search view for products and categories
+    """
+    model = Product
+    template_name = 'core/search.html'
+    context_object_name = 'results'
+    paginate_by = 12
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '').strip()
+        
+        if not query or len(query) < 2:
+            return Product.objects.none()
+        
+        # Search in products
+        queryset = Product.objects.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(category__title__icontains=query),
+            is_active=True
+        ).select_related('category').distinct()
+        
+        return queryset.order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get('q', '').strip()
+        
+        context['search_query'] = query
+        context['query_length'] = len(query)
+        
+        # Get search statistics
+        if query and len(query) >= 2:
+            products = self.get_queryset()
+            categories = Category.objects.filter(title__icontains=query)
+            
+            context['total_results'] = products.count()
+            context['categories'] = categories
+            context['search_performed'] = True
+        else:
+            context['search_performed'] = False
+        
+        return context
+
+
+def search_api(request):
+    """
+    API endpoint for instant search suggestions
+    """
+    query = request.GET.get('q', '').strip()
+    
+    if not query or len(query) < 2:
+        return JsonResponse({'results': []})
+    
+    # Search products
+    products = Product.objects.filter(
+        Q(name__icontains=query) | Q(description__icontains=query),
+        is_active=True
+    ).values('id', 'name', 'slug', 'price')[:5]
+    
+    # Search categories
+    categories = Category.objects.filter(
+        title__icontains=query
+    ).values('id', 'title', 'slug')[:3]
+    
+    results = {
+        'products': list(products),
+        'categories': list(categories),
+    }
+    
+    return JsonResponse(results)
+
+
+def search_autocomplete(request):
+    """
+    Autocomplete suggestions for search bar
+    """
+    query = request.GET.get('q', '').strip()
+    
+    if not query or len(query) < 1:
+        return JsonResponse({'suggestions': []})
+    
+    # Get product names
+    products = Product.objects.filter(
+        name__icontains=query,
+        is_active=True
+    ).values_list('name', flat=True).distinct()[:10]
+    
+    # Get category names
+    categories = Category.objects.filter(
+        title__icontains=query
+    ).values_list('title', flat=True).distinct()[:5]
+    
+    suggestions = {
+        'products': list(products),
+        'categories': list(categories),
+    }
+    
+    return JsonResponse(suggestions)

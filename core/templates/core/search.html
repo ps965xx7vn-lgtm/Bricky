@@ -1,0 +1,229 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Search Results - {{ search_query }} | Bricky LEGO Store{% endblock %}
+
+{% block content %}
+<div class="search-results-container">
+    <div class="container">
+        <div class="search-header">
+            <h1>Search Results</h1>
+            <p class="search-query">
+                {% if search_performed %}
+                    {% if search_query %}
+                        Results for "<strong>{{ search_query }}</strong>"
+                    {% else %}
+                        Please enter a search query
+                    {% endif %}
+                {% else %}
+                    Enter a search term to get started
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="search-form-wrapper">
+            <form method="get" class="search-form-main">
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search for products, categories..." 
+                        value="{{ search_query }}"
+                        class="search-input-main"
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="search-btn-submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if search_performed %}
+            <!-- Results Summary -->
+            {% if total_results > 0 or categories %}
+                <div class="results-summary">
+                    <p>
+                        {% if total_results > 0 %}
+                            Found <strong>{{ total_results }}</strong> product{{ total_results|pluralize }}
+                        {% endif %}
+                        {% if categories %}
+                            in <strong>{{ categories|length }}</strong> categor{{ categories|length|pluralize:"y,ies" }}
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Categories Results -->
+                {% if categories %}
+                <div class="search-section">
+                    <h2>Categories</h2>
+                    <div class="categories-results-grid">
+                        {% for category in categories %}
+                        <a href="?category={{ category.slug }}" class="category-result-card">
+                            <div class="category-result-icon">
+                                <i class="fas fa-th"></i>
+                            </div>
+                            <div class="category-result-info">
+                                <h3>{{ category.title }}</h3>
+                                <p>{{ category.products.count }} products</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Products Results -->
+                {% if results %}
+                <div class="search-section">
+                    <h2>Products</h2>
+                    <div class="products-grid">
+                        {% for product in results %}
+                        <a href="{{ product.get_absolute_url }}" class="product-card">
+                            <div class="product-image">
+                                {% if product.picture %}
+                                    <img src="{{ product.picture.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <div class="image-placeholder">
+                                        <i class="fas fa-cube"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="product-badge">
+                                    <span class="in-stock">In Stock</span>
+                                </div>
+                            </div>
+                            <div class="product-content">
+                                <p class="product-category">{{ product.category.title }}</p>
+                                <h3 class="product-name">{{ product.name }}</h3>
+                                <p class="product-price">${{ product.price }}</p>
+                                <div class="product-actions">
+                                    <button class="btn-primary" onclick="return false;">View Details</button>
+                                </div>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <p>No products found</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <div class="pagination">
+                        <div class="pagination-controls">
+                            {% if page_obj.has_previous %}
+                                <a href="?q={{ search_query }}&page=1" class="page-btn">&laquo; First</a>
+                                <a href="?q={{ search_query }}&page={{ page_obj.previous_page_number }}" class="page-btn">Previous</a>
+                            {% endif %}
+
+                            <span class="page-info">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+
+                            {% if page_obj.has_next %}
+                                <a href="?q={{ search_query }}&page={{ page_obj.next_page_number }}" class="page-btn">Next</a>
+                                <a href="?q={{ search_query }}&page={{ page_obj.paginator.num_pages }}" class="page-btn">Last &raquo;</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% else %}
+                <!-- No Results Message -->
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h2>No Results Found</h2>
+                    <p>We couldn't find any products matching "<strong>{{ search_query }}</strong>"</p>
+                    <div class="no-results-suggestions">
+                        <p>Try:</p>
+                        <ul>
+                            <li>Using different keywords</li>
+                            <li>Checking for spelling mistakes</li>
+                            <li>Using fewer or simpler words</li>
+                            <li>Removing filters</li>
+                        </ul>
+                        <a href="{% url 'core:index' %}" class="btn-primary">Browse All Products</a>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- Initial Search Guidance -->
+            <div class="search-guidance">
+                <i class="fas fa-lightbulb"></i>
+                <h2>Start Searching</h2>
+                <p>Enter a product name or category to find what you're looking for</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Autocomplete functionality
+    const searchInput = document.querySelector('.search-input-main');
+    let autocompleteDropdown = null;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        if (query.length < 1) {
+            if (autocompleteDropdown) autocompleteDropdown.remove();
+            return;
+        }
+
+        // Remove old dropdown
+        if (autocompleteDropdown) autocompleteDropdown.remove();
+
+        // Fetch suggestions
+        fetch(`/api/autocomplete/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.suggestions.products.length === 0 && data.suggestions.categories.length === 0) {
+                    return;
+                }
+
+                // Create dropdown
+                const dropdown = document.createElement('div');
+                dropdown.className = 'autocomplete-dropdown';
+
+                let html = '';
+
+                if (data.suggestions.categories.length > 0) {
+                    html += '<div class="autocomplete-section"><strong>Categories</strong>';
+                    data.suggestions.categories.forEach(cat => {
+                        html += `<div class="autocomplete-item" data-type="category">${cat}</div>`;
+                    });
+                    html += '</div>';
+                }
+
+                if (data.suggestions.products.length > 0) {
+                    html += '<div class="autocomplete-section"><strong>Products</strong>';
+                    data.suggestions.products.forEach(prod => {
+                        html += `<div class="autocomplete-item" data-type="product">${prod}</div>`;
+                    });
+                    html += '</div>';
+                }
+
+                dropdown.innerHTML = html;
+                searchInput.parentElement.appendChild(dropdown);
+                autocompleteDropdown = dropdown;
+
+                // Add click handlers
+                document.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        searchInput.value = this.textContent;
+                        dropdown.remove();
+                        searchInput.form.submit();
+                    });
+                });
+            });
+    });
+
+    // Close autocomplete on blur
+    searchInput.addEventListener('blur', function() {
+        setTimeout(() => {
+            if (autocompleteDropdown) autocompleteDropdown.remove();
+        }, 200);
+    });
+</script>
+{% endblock %}

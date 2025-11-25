@@ -50,7 +50,7 @@
                 {% endif %}
             </ul>
             <div class="nav-right">
-                <a href="#search" class="search-btn">
+                <a href="#search" class="search-btn" onclick="openSearchModal(event)">
                     <i class="fas fa-search"></i>
                 </a>
                 <a href="#cart" class="cart-btn">
@@ -124,7 +124,102 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- Search Modal -->
+    <div class="search-modal" id="search-modal">
+        <div class="search-modal-content">
+            <button class="search-modal-close" onclick="closeSearchModal()">&times;</button>
+            <form method="get" action="{% url 'core:search' %}" class="search-modal-form">
+                <div class="search-modal-input-wrapper">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search products, categories, sets..." 
+                        class="search-modal-input"
+                        autocomplete="off"
+                        autofocus
+                    >
+                    <button type="submit" class="search-modal-submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+            <div class="search-modal-suggestions" id="search-suggestions"></div>
+        </div>
+    </div>
+
     <script src="{% static 'store/js/lego.js' %}"></script>
+    <script>
+        function openSearchModal(e) {
+            e.preventDefault();
+            document.getElementById('search-modal').classList.add('active');
+            document.querySelector('.search-modal-input').focus();
+        }
+
+        function closeSearchModal() {
+            document.getElementById('search-modal').classList.remove('active');
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSearchModal();
+            }
+        });
+
+        // Open modal on Ctrl+K or Cmd+K
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                openSearchModal({preventDefault: () => {}});
+            }
+        });
+
+        // Autocomplete for search modal
+        const searchInput = document.querySelector('.search-modal-input');
+        const suggestionsContainer = document.getElementById('search-suggestions');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                suggestionsContainer.innerHTML = '';
+                return;
+            }
+
+            fetch(`/api/autocomplete/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+
+                    if (data.suggestions.categories.length > 0) {
+                        html += '<div class="suggestions-section"><h4>Categories</h4>';
+                        data.suggestions.categories.forEach(cat => {
+                            html += `<div class="suggestion-item" onclick="goToCategory('${cat}')">${cat}</div>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    if (data.suggestions.products.length > 0) {
+                        html += '<div class="suggestions-section"><h4>Products</h4>';
+                        data.suggestions.products.forEach(prod => {
+                            html += `<div class="suggestion-item" onclick="setSuggestion('${prod}')">${prod}</div>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    suggestionsContainer.innerHTML = html;
+                });
+        });
+
+        function setSuggestion(text) {
+            document.querySelector('.search-modal-input').value = text;
+            document.querySelector('.search-modal-form').submit();
+        }
+
+        function goToCategory(category) {
+            window.location.href = `/?category=${encodeURIComponent(category.toLowerCase().replace(/ /g, '-'))}`;
+        }
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
