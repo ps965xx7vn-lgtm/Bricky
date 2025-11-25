@@ -104,6 +104,27 @@ class CookieSettingsView(TemplateView):
     template_name = 'core/cookie_settings.html'
 
 
+class AboutView(TemplateView):
+    """
+    View for displaying the About page
+    """
+    template_name = 'core/about.html'
+
+
+class ContactView(TemplateView):
+    """
+    View for displaying the Contact page
+    """
+    template_name = 'core/contact.html'
+
+
+class NewReleasesView(TemplateView):
+    """
+    View for displaying the New Releases page
+    """
+    template_name = 'core/new_releases.html'
+
+
 class SearchView(ListView):
     """
     Comprehensive search view for products and categories

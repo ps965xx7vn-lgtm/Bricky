@@ -42,9 +42,9 @@
             </div>
             <ul class="nav-links">
                 <li><a href="{% url 'core:index' %}">Shop</a></li>
-                <li><a href="#categories">Categories</a></li>
-                <li><a href="#new">New Releases</a></li>
-                <li><a href="#about">About</a></li>
+                <li><a href="{% url 'core:index' %}#categories">Categories</a></li>
+                <li><a href="{% url 'core:new_releases' %}">New Releases</a></li>
+                <li><a href="{% url 'core:about' %}">About</a></li>
                 {% if user.is_staff %}
                 <li><a href="{% url 'admin:index' %}">Admin</a></li>
                 {% endif %}
@@ -76,15 +76,16 @@
                     <h3>Shop</h3>
                     <ul>
                         <li><a href="{% url 'core:index' %}">Home</a></li>
-                        <li><a href="#products">Shop</a></li>
-                        <li><a href="#categories">Categories</a></li>
-                        <li><a href="#">New Releases</a></li>
+                        <li><a href="{% url 'core:index' %}#products">Shop</a></li>
+                        <li><a href="{% url 'core:index' %}#categories">Categories</a></li>
+                        <li><a href="{% url 'core:new_releases' %}">New Releases</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
                     <h3>About</h3>
                     <ul>
-                        <li><a href="#">About Bricky</a></li>
+                        <li><a href="{% url 'core:about' %}">About Bricky</a></li>
+                        <li><a href="{% url 'core:contact' %}">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">

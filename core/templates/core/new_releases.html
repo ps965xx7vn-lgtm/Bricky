@@ -1,0 +1,479 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}New Releases | Bricky LEGO Store{% endblock %}
+
+{% block content %}
+<div class="new-releases-container">
+    <div class="container">
+        <div class="page-header">
+            <h1>New Releases</h1>
+            <p>Discover the Latest LEGO Sets & Themes</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="releases-filter">
+            <form method="get" class="filter-form">
+                <div class="filter-group">
+                    <select name="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="sets">LEGO Sets</option>
+                        <option value="themes">LEGO Themes</option>
+                        <option value="minifigures">Minifigures</option>
+                        <option value="accessories">Accessories</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <select name="sort" class="filter-select">
+                        <option value="-created_at">Newest First</option>
+                        <option value="price">Price: Low to High</option>
+                        <option value="-price">Price: High to Low</option>
+                        <option value="name">Name: A-Z</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary">Apply Filters</button>
+            </form>
+        </div>
+
+        <!-- New Releases Grid -->
+        <div class="releases-grid">
+            <!-- Sample Cards -->
+            <div class="release-card">
+                <div class="release-badge">NEW</div>
+                <div class="release-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                </div>
+                <div class="release-content">
+                    <p class="release-category">Sets</p>
+                    <h3>LEGO City Collection</h3>
+                    <p class="release-date">Released: November 2024</p>
+                    <p class="release-description">Build your dream city with this amazing collection.</p>
+                    <div class="release-price">$79.99</div>
+                    <button class="btn-primary" style="width: 100%;">View Details</button>
+                </div>
+            </div>
+
+            <div class="release-card">
+                <div class="release-badge">NEW</div>
+                <div class="release-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                </div>
+                <div class="release-content">
+                    <p class="release-category">Themes</p>
+                    <h3>LEGO Star Wars</h3>
+                    <p class="release-date">Released: October 2024</p>
+                    <p class="release-description">May the Force be with you in this epic Star Wars set.</p>
+                    <div class="release-price">$149.99</div>
+                    <button class="btn-primary" style="width: 100%;">View Details</button>
+                </div>
+            </div>
+
+            <div class="release-card">
+                <div class="release-badge">NEW</div>
+                <div class="release-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                </div>
+                <div class="release-content">
+                    <p class="release-category">Minifigures</p>
+                    <h3>LEGO Minifigure Collection</h3>
+                    <p class="release-date">Released: November 2024</p>
+                    <p class="release-description">Expand your collection with exclusive minifigures.</p>
+                    <div class="release-price">$9.99</div>
+                    <button class="btn-primary" style="width: 100%;">View Details</button>
+                </div>
+            </div>
+
+            <div class="release-card">
+                <div class="release-badge">COMING SOON</div>
+                <div class="release-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                </div>
+                <div class="release-content">
+                    <p class="release-category">Sets</p>
+                    <h3>LEGO Marvel Collection</h3>
+                    <p class="release-date">Coming: December 2024</p>
+                    <p class="release-description">New Marvel-themed LEGO sets coming soon.</p>
+                    <div class="release-price">$99.99</div>
+                    <button class="btn-secondary" style="width: 100%;">Notify Me</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <section class="timeline-section">
+            <h2>Release Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">November 2024</div>
+                    <div class="timeline-content">
+                        <h4>Holiday Season Collection</h4>
+                        <p>Festive LEGO sets perfect for holiday gifting</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">December 2024</div>
+                    <div class="timeline-content">
+                        <h4>Marvel Universe Expansion</h4>
+                        <p>New superhero-themed LEGO sets arrive</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">January 2025</div>
+                    <div class="timeline-content">
+                        <h4>LEGO Architecture Series</h4>
+                        <p>Famous landmarks in LEGO form</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter CTA -->
+        <section class="newsletter-cta">
+            <div class="newsletter-content">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to our newsletter to get notified about new releases and exclusive offers</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit" class="btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+    .new-releases-container {
+        padding: var(--spacing-lg) 0;
+        background: white;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .page-header h1 {
+        font-size: 36px;
+        color: var(--text-dark);
+        margin-bottom: var(--spacing);
+    }
+
+    .page-header p {
+        font-size: 18px;
+        color: var(--text-light);
+    }
+
+    .releases-filter {
+        display: flex;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+        padding: var(--spacing-md);
+        background: var(--light);
+        border-radius: 8px;
+        flex-wrap: wrap;
+    }
+
+    .filter-form {
+        display: flex;
+        gap: var(--spacing-md);
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .releases-filter .btn-primary {
+        align-self: flex-end;
+        white-space: nowrap;
+    }
+
+    .releases-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .release-card {
+        background: white;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: var(--transition);
+        position: relative;
+    }
+
+    .release-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+    }
+
+    .release-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--primary);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 10;
+    }
+
+    .release-image {
+        width: 100%;
+        height: 220px;
+        background: var(--light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .image-placeholder {
+        font-size: 80px;
+        color: var(--primary);
+        opacity: 0.5;
+    }
+
+    .release-content {
+        padding: var(--spacing-md);
+    }
+
+    .release-category {
+        font-size: 12px;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0 0 var(--spacing-sm) 0;
+    }
+
+    .release-content h3 {
+        margin: 0 0 var(--spacing-sm) 0;
+        font-size: 18px;
+        color: var(--text-dark);
+    }
+
+    .release-date {
+        font-size: 13px;
+        color: var(--text-light);
+        margin: 0 0 var(--spacing-sm) 0;
+    }
+
+    .release-description {
+        font-size: 14px;
+        color: var(--text-light);
+        margin: 0 0 var(--spacing-md) 0;
+        line-height: 1.5;
+    }
+
+    .release-price {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .timeline-section {
+        margin: var(--spacing-lg) 0;
+    }
+
+    .timeline-section h2 {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .timeline {
+        position: relative;
+        padding: var(--spacing-lg) 0;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 100%;
+        background: var(--primary);
+    }
+
+    .timeline-item {
+        margin-bottom: var(--spacing-lg);
+        position: relative;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-date {
+        text-align: right;
+        margin-right: 51%;
+        padding-right: var(--spacing-md);
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+        margin-left: 51%;
+        padding-left: var(--spacing-md);
+    }
+
+    .timeline-item:nth-child(even) .timeline-date {
+        text-align: left;
+        margin-left: 51%;
+        padding-left: var(--spacing-md);
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+        margin-right: 51%;
+        padding-right: var(--spacing-md);
+        text-align: right;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 12px;
+        background: var(--primary);
+        border: 3px solid white;
+        border-radius: 50%;
+        z-index: 10;
+    }
+
+    .timeline-date {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 16px;
+    }
+
+    .timeline-content h4 {
+        margin: var(--spacing) 0 var(--spacing-sm) 0;
+        font-size: 16px;
+        color: var(--text-dark);
+    }
+
+    .timeline-content p {
+        margin: 0;
+        color: var(--text-light);
+        font-size: 14px;
+    }
+
+    .newsletter-cta {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: var(--spacing-lg);
+        border-radius: 12px;
+        text-align: center;
+        margin-top: var(--spacing-lg);
+    }
+
+    .newsletter-content h2 {
+        font-size: 28px;
+        margin-bottom: var(--spacing);
+    }
+
+    .newsletter-content p {
+        font-size: 16px;
+        margin-bottom: var(--spacing-lg);
+        opacity: 0.95;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: var(--spacing);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .newsletter-form input {
+        flex: 1;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .newsletter-form .btn-primary {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 28px;
+        }
+
+        .releases-filter {
+            flex-direction: column;
+        }
+
+        .filter-group {
+            min-width: auto;
+        }
+
+        .releases-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .timeline::before {
+            left: 0;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-date,
+        .timeline-item:nth-child(even) .timeline-date {
+            text-align: left;
+            margin: 0;
+            padding-left: 40px;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content,
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 0;
+            margin-right: 0;
+            padding-left: 40px;
+            text-align: left;
+        }
+
+        .timeline-item::before {
+            left: 0;
+        }
+
+        .newsletter-form {
+            flex-direction: column;
+        }
+
+        .newsletter-form .btn-primary {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

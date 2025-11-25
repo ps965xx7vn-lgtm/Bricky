@@ -1,0 +1,352 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}About Bricky | LEGO Store - Build Your World{% endblock %}
+
+{% block content %}
+<div class="about-page-container">
+    <!-- About Hero -->
+    <section class="about-hero">
+        <div class="container">
+            <h1>About Bricky</h1>
+            <p>Your Premier LEGO Destination Since 2020</p>
+        </div>
+    </section>
+
+    <!-- Our Story -->
+    <section class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Our Story</h2>
+                    <p>
+                        Bricky was founded with a simple mission: to bring the joy of building to enthusiasts of all ages. 
+                        What started as a small passion project has grown into one of Turkey's leading LEGO retailers.
+                    </p>
+                    <p>
+                        We believe that LEGO is more than just toys—it's a way to express creativity, build confidence, 
+                        and create lasting memories with family and friends. Every set we curate is chosen with care to 
+                        ensure quality, authenticity, and value.
+                    </p>
+                </div>
+                <div class="about-image">
+                    <div class="image-placeholder">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Values -->
+    <section class="values-section">
+        <div class="container">
+            <h2>Our Values</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>Authenticity</h3>
+                    <p>Every product is 100% authentic LEGO, sourced from authorized distributors.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Passion</h3>
+                    <p>We're passionate about building and sharing the joy of creation.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Trust</h3>
+                    <p>Your satisfaction is our priority. Transparent pricing and reliable service.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Innovation</h3>
+                    <p>Constantly expanding our catalog with the latest LEGO themes and sets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">15,000+</div>
+                    <p>Happy Customers</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <p>Products Available</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5 Years</div>
+                    <p>In Business</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99%</div>
+                    <p>Satisfaction Rate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="why-us-section">
+        <div class="container">
+            <h2>Why Choose Bricky?</h2>
+            <div class="why-us-grid">
+                <div class="why-us-item">
+                    <h3><i class="fas fa-check-circle"></i> Authentic Products</h3>
+                    <p>All LEGO sets are 100% authentic and sourced from official distributors.</p>
+                </div>
+                <div class="why-us-item">
+                    <h3><i class="fas fa-check-circle"></i> Competitive Pricing</h3>
+                    <p>Best prices in Turkey with regular discounts and special promotions.</p>
+                </div>
+                <div class="why-us-item">
+                    <h3><i class="fas fa-check-circle"></i> Fast Shipping</h3>
+                    <p>Quick delivery across Turkey with tracking and insurance.</p>
+                </div>
+                <div class="why-us-item">
+                    <h3><i class="fas fa-check-circle"></i> Expert Support</h3>
+                    <p>Friendly team ready to help with recommendations and questions.</p>
+                </div>
+                <div class="why-us-item">
+                    <h3><i class="fas fa-check-circle"></i> Easy Returns</h3>
+                    <p>30-day return policy with no questions asked refunds.</p>
+                </div>
+                <div class="why-us-item">
+                    <h3><i class="fas fa-check-circle"></i> Secure Shopping</h3>
+                    <p>SSL encrypted checkout and multiple payment options.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact CTA -->
+    <section class="contact-cta-section">
+        <div class="container">
+            <h2>Get in Touch</h2>
+            <p>Have questions? We'd love to hear from you!</p>
+            <a href="{% url 'core:contact' %}" class="btn-primary">Contact Us</a>
+        </div>
+    </section>
+</div>
+
+<style>
+    .about-page-container {
+        background: white;
+    }
+
+    .about-hero {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 80px var(--spacing);
+        text-align: center;
+    }
+
+    .about-hero h1 {
+        font-size: 48px;
+        margin-bottom: var(--spacing);
+    }
+
+    .about-hero p {
+        font-size: 20px;
+        opacity: 0.95;
+    }
+
+    .about-section {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spacing-lg);
+        align-items: center;
+    }
+
+    .about-text p {
+        color: var(--text-light);
+        line-height: 1.8;
+        margin-bottom: var(--spacing-md);
+        font-size: 16px;
+    }
+
+    .about-image {
+        width: 100%;
+        min-height: 300px;
+    }
+
+    .image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--light);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        color: var(--primary);
+    }
+
+    .values-section {
+        padding: var(--spacing-lg) 0;
+        background: var(--light);
+    }
+
+    .values-section h2 {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+        font-size: 32px;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .value-card {
+        background: white;
+        padding: var(--spacing-lg);
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+
+    .value-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .value-icon {
+        font-size: 48px;
+        color: var(--primary);
+        margin-bottom: var(--spacing);
+    }
+
+    .value-card h3 {
+        margin-bottom: var(--spacing);
+        font-size: 18px;
+    }
+
+    .value-card p {
+        color: var(--text-light);
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .stats-section {
+        padding: var(--spacing-lg) 0;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-lg);
+        text-align: center;
+    }
+
+    .stat-item .stat-number {
+        font-size: 40px;
+        font-weight: 700;
+        display: block;
+        margin-bottom: var(--spacing);
+    }
+
+    .stat-item p {
+        font-size: 16px;
+        opacity: 0.95;
+        margin: 0;
+    }
+
+    .why-us-section {
+        padding: var(--spacing-lg) 0;
+    }
+
+    .why-us-section h2 {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+        font-size: 32px;
+    }
+
+    .why-us-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .why-us-item {
+        padding: var(--spacing-md);
+        border-left: 4px solid var(--primary);
+        background: var(--light);
+        border-radius: 4px;
+    }
+
+    .why-us-item h3 {
+        margin-top: 0;
+        margin-bottom: var(--spacing);
+        color: var(--text-dark);
+        font-size: 16px;
+    }
+
+    .why-us-item h3 i {
+        color: var(--primary);
+        margin-right: var(--spacing-sm);
+    }
+
+    .why-us-item p {
+        margin: 0;
+        color: var(--text-light);
+        font-size: 14px;
+    }
+
+    .contact-cta-section {
+        padding: var(--spacing-lg) 0;
+        text-align: center;
+        background: var(--light);
+    }
+
+    .contact-cta-section h2 {
+        font-size: 32px;
+        margin-bottom: var(--spacing);
+    }
+
+    .contact-cta-section p {
+        color: var(--text-light);
+        margin-bottom: var(--spacing-lg);
+        font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+        .about-hero h1 {
+            font-size: 32px;
+        }
+
+        .about-content {
+            grid-template-columns: 1fr;
+        }
+
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .why-us-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
