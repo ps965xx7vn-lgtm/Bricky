@@ -342,8 +342,9 @@
     </section>
 
 
+<script src="{% static 'store/js/product-detail-config.js' %}"></script>
 <script>
-    // Set the add to cart URL for product-detail.js
+    // Override the default URL with the Django URL
     const addToCartUrl = "{% url 'core:add_to_cart' %}";
 </script>
 <script src="{% static 'store/js/product-detail.js' %}"></script>

@@ -164,8 +164,9 @@
 </div>
 
 <script src="{% static 'store/js/cart.js' %}"></script>
+<script src="{% static 'store/js/cart-config.js' %}"></script>
 <script>
-    // Set up Django URLs for AJAX calls
+    // Override defaults with Django URLs
     window.CART_URLS = {
         'remove_from_cart': '{% url "core:remove_from_cart" %}',
         'update_cart': '{% url "core:update_cart" %}',
