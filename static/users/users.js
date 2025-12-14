@@ -145,6 +145,7 @@ class PasswordToggle {
 
     init() {
         const passwordFields = document.querySelectorAll('input[type="password"]');
+        
         passwordFields.forEach((field, index) => {
             // Create wrapper for better positioning
             const wrapper = document.createElement('div');
@@ -187,14 +188,26 @@ class PasswordToggle {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize form validators
-    new FormValidator('form');
+    try {
+        // Initialize form validators
+        new FormValidator('form');
+    } catch (e) {
+        console.error('FormValidator error:', e);
+    }
 
-    // Initialize image preview
-    new ImagePreview('input[name="picture"]', '.profile-avatar');
+    try {
+        // Initialize image preview
+        new ImagePreview('input[name="picture"]', '.profile-avatar');
+    } catch (e) {
+        console.error('ImagePreview error:', e);
+    }
 
-    // Initialize password toggle
-    new PasswordToggle();
+    try {
+        // Initialize password toggle for static HTML elements
+        initPasswordToggle();
+    } catch (e) {
+        console.error('Password toggle error:', e);
+    }
 
     // Mark inputs with errors
     markInputsWithErrors();
@@ -210,6 +223,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// Initialize password toggle buttons
+function initPasswordToggle() {
+    const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const wrapper = btn.closest('.password-field-wrapper');
+            if (wrapper) {
+                const passwordField = wrapper.querySelector('input[type="password"], input[type="text"]');
+                if (passwordField) {
+                    togglePasswordVisibility(passwordField, btn);
+                }
+            }
+        });
+    });
+}
+
+// Toggle password visibility
+function togglePasswordVisibility(field, btn) {
+    if (field.type === 'password') {
+        field.type = 'text';
+        btn.classList.add('password-visible');
+        btn.setAttribute('aria-label', 'Hide password');
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+    } else {
+        field.type = 'password';
+        btn.classList.remove('password-visible');
+        btn.setAttribute('aria-label', 'Show password');
+        btn.innerHTML = '<i class="fas fa-eye"></i>';
+    }
+}
 
 // Mark input fields that have error messages
 function markInputsWithErrors() {

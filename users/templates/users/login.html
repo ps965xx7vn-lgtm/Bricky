@@ -36,7 +36,12 @@
 
             <div class="form-group">
                 <label for="{{ form.password.id_for_label }}">Password</label>
-                {{ form.password }}
+                <div class="password-field-wrapper">
+                    {{ form.password }}
+                    <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility" title="Show/Hide password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
                 {% if form.password.errors %}
                     {% for error in form.password.errors %}
                         <span class="error-message">{{ error }}</span>
