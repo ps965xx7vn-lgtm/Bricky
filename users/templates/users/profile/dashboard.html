@@ -61,15 +61,15 @@
                 <section class="profile-section">
                     <div class="section-header">
                         <h2>Recent Orders</h2>
-                        <a href="#" class="btn-secondary">View All</a>
+                        <a href="{% url 'orders:order_list' %}" class="btn-secondary">View All</a>
                     </div>
 
                     {% if orders %}
                         <div class="orders-list">
-                            {% for order in orders|slice:":5" %}
+                            {% for order in orders %}
                                 <div class="order-card">
                                     <div class="order-header">
-                                        <span class="order-id">Order #{{ order.id|truncatechars:8 }}</span>
+                                        <span class="order-id">Order #{{ order.uuid|truncatechars:10 }}</span>
                                         <span class="order-date">{{ order.registered_at|date:"M d, Y" }}</span>
                                     </div>
                                     <div class="order-footer">
@@ -98,9 +98,11 @@
                         </div>
                         <div class="preference-toggle">
                             {% if is_newsletter_subscriber %}
-                                <span class="badge-success">Subscribed</span>
+                                <span class="badge-success" id="newsletter-status">Subscribed</span>
+                                <button type="button" class="btn-secondary btn-sm" id="newsletter-btn" data-action="unsubscribe" data-email="{{ user.email }}">Unsubscribe</button>
                             {% else %}
-                                <span class="badge-secondary">Not Subscribed</span>
+                                <span class="badge-secondary" id="newsletter-status">Not Subscribed</span>
+                                <button type="button" class="btn-primary btn-sm" id="newsletter-btn" data-action="subscribe" data-email="{{ user.email }}">Subscribe</button>
                             {% endif %}
                         </div>
                     </div>
@@ -111,4 +113,62 @@
 </div>
 
 <link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const newsletterBtn = document.getElementById('newsletter-btn');
+    const newsletterStatus = document.getElementById('newsletter-status');
+    
+    if (newsletterBtn) {
+        newsletterBtn.addEventListener('click', function() {
+            const email = this.dataset.email;
+            const action = this.dataset.action;
+            const url = action === 'subscribe' 
+                ? '{% url "notifications:newsletter_subscribe_ajax" %}'
+                : '{% url "notifications:newsletter_unsubscribe_ajax" %}';
+            
+            const payload = JSON.stringify({ email: email });
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: payload
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update button and status
+                    if (action === 'subscribe') {
+                        newsletterBtn.textContent = 'Unsubscribe';
+                        newsletterBtn.dataset.action = 'unsubscribe';
+                        newsletterBtn.classList.remove('btn-primary');
+                        newsletterBtn.classList.add('btn-secondary');
+                        newsletterStatus.textContent = 'Subscribed';
+                        newsletterStatus.classList.remove('badge-secondary');
+                        newsletterStatus.classList.add('badge-success');
+                    } else {
+                        newsletterBtn.textContent = 'Subscribe';
+                        newsletterBtn.dataset.action = 'subscribe';
+                        newsletterBtn.classList.remove('btn-secondary');
+                        newsletterBtn.classList.add('btn-primary');
+                        newsletterStatus.textContent = 'Not Subscribed';
+                        newsletterStatus.classList.remove('badge-success');
+                        newsletterStatus.classList.add('badge-secondary');
+                    }
+                    // Show success message
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

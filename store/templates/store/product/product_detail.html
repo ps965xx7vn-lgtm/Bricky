@@ -321,7 +321,7 @@
             <div class="newsletter-content newsletter-white-content">
                 <h2 class="newsletter-white-title">Don't Miss Out!</h2>
                 <p class="newsletter-subtitle">Get exclusive discounts on new LEGO sets and building tips delivered to your inbox</p>
-                <form class="newsletter-form newsletter-form-container" id="newsletter-form-product" action="{% url 'core:newsletter_subscribe_ajax' %}">
+                <form class="newsletter-form newsletter-form-container" id="newsletter-form-product" action="{% url 'notifications:newsletter_subscribe_ajax' %}">
                     {% csrf_token %}
                     <input type="email" name="email" placeholder="Enter your email" required class="newsletter-input">
                     <button type="submit" class="btn-primary newsletter-button-white">Subscribe Now</button>

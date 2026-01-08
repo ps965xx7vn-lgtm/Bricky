@@ -326,7 +326,8 @@ class PlaceOrderView(LoginRequiredMixin, View):
                 customer=customer,
                 total_price=total,
                 status='N',
-                address=request.POST.get('address', customer.address) or 'Not provided'
+                address=request.POST.get('address', customer.address) or 'Not provided',
+                is_draft=False
             )
             
             # Add items to order
@@ -410,3 +411,26 @@ class SetShippingView(LoginRequiredMixin, View):
                 'success': False,
                 'message': 'Error setting shipping method'
             }, status=500)
+
+# ============ ORDER LIST VIEW ============
+
+class OrderListView(LoginRequiredMixin, TemplateView):
+    """
+    Display all orders for the current user
+    """
+    template_name = 'orders/order_list.html'
+    login_url = 'users:login'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        try:
+            customer = self.request.user.customer
+            orders = Order.objects.filter(customer=customer, is_draft=False).order_by('-registered_at')
+            context['orders'] = orders
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Could not fetch orders for user {self.request.user.username}: {str(e)}")
+            context['orders'] = []
+        
+        return context

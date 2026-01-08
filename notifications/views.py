@@ -84,6 +84,56 @@ class NewsletterSubscribeAjaxView(View):
                 'message': 'An error occurred. Please try again.'
             }, status=500)
 
+class NewsletterUnsubscribeAjaxView(View):
+    """
+    AJAX view for unsubscribing from the newsletter
+    """
+    def post(self, request):
+        """Handle AJAX POST request to unsubscribe"""
+        try:
+            data = json.loads(request.body)
+            email = data.get('email', '').strip().lower()
+
+            if not email:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Email is required.'
+                }, status=400)
+
+            # Find and unsubscribe
+            try:
+                subscription = NewsletterSubscription.objects.get(email=email)
+                if subscription.status == 'active':
+                    from django.utils import timezone
+                    subscription.status = 'unsubscribed'
+                    subscription.unsubscribed_at = timezone.now()
+                    subscription.save()
+                    
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'You have been unsubscribed from our newsletter.'
+                    }, status=200)
+                else:
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'This email is not currently subscribed.'
+                    }, status=400)
+            except NewsletterSubscription.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'This email is not found in our newsletter list.'
+                }, status=404)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid request format.'
+            }, status=400)
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': 'An error occurred. Please try again.'
+            }, status=500)
 
 class NewsletterSuccessView(TemplateView):
     """

@@ -17,6 +17,8 @@ from django.urls import reverse_lazy
 
 from users.forms import UserLoginForm, UserRegisterForm, ForgotPasswordForm, ResetPasswordForm, ProfileEditForm
 from users.models import CustomUser
+from orders.models import Order
+from core.models import NewsletterSubscription
 
 
 class LoginView(TemplateView):
@@ -95,7 +97,29 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
+        user = self.request.user
+        context['user'] = user
+        
+        # Get user's recent orders (latest 5)
+        try:
+            # Query orders through the customer relationship
+            customer = user.customer
+            orders = Order.objects.filter(customer=customer, is_draft=False).order_by('-registered_at')[:5]
+            context['orders'] = orders
+        except Exception as e:
+            # Log error for debugging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Could not fetch orders for user {user.username}: {str(e)}")
+            context['orders'] = []
+        
+        # Check if user is newsletter subscriber
+        try:
+            is_subscriber = NewsletterSubscription.objects.filter(email=user.email, status='active').exists()
+            context['is_newsletter_subscriber'] = is_subscriber
+        except:
+            context['is_newsletter_subscriber'] = False
+        
         return context
 
 
