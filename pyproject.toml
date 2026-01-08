@@ -12,7 +12,8 @@ dependencies = [
     "django-phonenumber-field[phonenumbers] (>=8.3.0,<9.0.0)",
     "django-debug-toolbar (>=6.1.0,<7.0.0)",
     "pillow (>=12.0.0,<13.0.0)",
-    "environs (>=14.5.0,<15.0.0)"
+    "environs (>=14.5.0,<15.0.0)",
+    "pytelegrambotapi (>=4.29.1,<5.0.0)"
 ]
 
 
