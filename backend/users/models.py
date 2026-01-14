@@ -15,6 +15,8 @@ class CustomUser(AbstractUser):
     email_is_verified: bool = models.BooleanField(default=False)
     picture = models.ImageField(blank=True,upload_to="user_pictures", default="user_pictures/default.png")
     phone: Optional[str] = PhoneNumberField(blank=True)
+    tg_id: int = models.IntegerField(blank=True,null=True)
+
 
     def __str__(self) -> str:
         return self.username
@@ -25,3 +27,4 @@ class CustomUser(AbstractUser):
         indexes=[
             models.Index(fields=["email"])
         ]
+
