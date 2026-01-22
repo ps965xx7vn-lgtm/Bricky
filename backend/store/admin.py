@@ -1,5 +1,6 @@
 from django.contrib import admin
-from store.models import Category, Product, Cart, CartItem
+from django.utils.html import format_html
+from store.models import Category, Product, Review
 
 
 @admin.register(Category)
@@ -36,37 +37,78 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
 
-class CartItemInline(admin.TabularInline):
-    model = CartItem
-    extra = 0
-    readonly_fields = ['product', 'price', 'added_at', 'updated_at']
-    fields = ['product', 'quantity', 'price']
-
-
-@admin.register(Cart)
-class CartAdmin(admin.ModelAdmin):
-    list_display = ['user', 'get_total_items', 'get_total_price', 'created_at']
-    readonly_fields = ['created_at', 'updated_at']
-    search_fields = ['user__username', 'user__email']
-    inlines = [CartItemInline]
-
-    def get_total_items(self, obj):
-        return obj.get_total_items()
-    get_total_items.short_description = 'Items'
-
-    def get_total_price(self, obj):
-        return f'${obj.get_total_price()}'
-    get_total_price.short_description = 'Total Price'
-
-
-@admin.register(CartItem)
-class CartItemAdmin(admin.ModelAdmin):
-    list_display = ['product', 'cart', 'quantity', 'price', 'get_total_price', 'added_at']
-    list_filter = ['added_at', 'updated_at']
-    readonly_fields = ['added_at', 'updated_at']
-    search_fields = ['product__name', 'cart__user__username']
-
-    def get_total_price(self, obj):
-        return f'${obj.get_total_price()}'
-    get_total_price.short_description = 'Total'
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    """Admin interface for Review model."""
+    
+    list_display = (
+        'product_name',
+        'author_name',
+        'rating_stars',
+        'approval_badge',
+        'created_at'
+    )
+    list_filter = ('rating', 'is_approved', 'created_at')
+    search_fields = (
+        'product__name',
+        'author__username',
+        'title',
+        'content'
+    )
+    readonly_fields = (
+        'id',
+        'created_at',
+        'updated_at',
+        'helpful_count',
+        'unhelpful_count'
+    )
+    
+    fieldsets = (
+        ('Product & Author', {
+            'fields': ('product', 'author')
+        }),
+        ('Review Content', {
+            'fields': ('title', 'content', 'rating')
+        }),
+        ('Moderation', {
+            'fields': ('is_approved',)
+        }),
+        ('Feedback', {
+            'fields': ('helpful_count', 'unhelpful_count'),
+            'classes': ('collapse',)
+        }),
+        ('System Information', {
+            'fields': ('id', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def product_name(self, obj):
+        """Display product name."""
+        return obj.product.name
+    product_name.short_description = 'Product'
+    
+    def author_name(self, obj):
+        """Display author username."""
+        return obj.author.username
+    author_name.short_description = 'Author'
+    
+    def rating_stars(self, obj):
+        """Display rating as stars."""
+        stars = '⭐' * obj.rating + '☆' * (5 - obj.rating)
+        return f"{stars} ({obj.rating}/5)"
+    rating_stars.short_description = 'Rating'
+    
+    def approval_badge(self, obj):
+        """Display approval status as colored badge."""
+        color = '#28a745' if obj.is_approved else '#dc3545'
+        status = 'Approved' if obj.is_approved else 'Pending'
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 5px 10px; border-radius: 3px; font-weight: bold;">{}</span>',
+            color,
+            status
+        )
+    approval_badge.short_description = 'Status'
+    
+    ordering = ('-created_at',)
 

@@ -4,8 +4,8 @@
 {% block title %}Shopping Cart | Bricky LEGO Store{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'store/css/cart.css' %}">
-    <link rel="stylesheet" href="{% static 'store/css/cart-utils.css' %}">
+    <link rel="stylesheet" href="{% static 'orders/css/cart.css' %}">
+    <link rel="stylesheet" href="{% static 'orders/css/cart-utils.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,7 @@
         <div class="container">
             <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
             <p class="breadcrumb">
-                <a href="{% url 'core:index' %}">Home</a> / 
+                <a href="{% url 'store:index' %}">Home</a> / 
                 <span>Shopping Cart</span>
             </p>
         </div>
@@ -188,8 +188,8 @@
     </div>
 </div>
 
-<script src="{% static 'store/js/cart.js' %}"></script>
-<script src="{% static 'store/js/cart-config.js' %}"></script>
+<script src="{% static 'orders/js/cart.js' %}"></script>
+<script src="{% static 'orders/js/cart-config.js' %}"></script>
 <script>
     // Override defaults with Django URLs
     window.CART_URLS = {

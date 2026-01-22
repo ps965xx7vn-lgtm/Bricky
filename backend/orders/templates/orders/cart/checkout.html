@@ -10,7 +10,7 @@
         <div class="container">
             <h1>Checkout</h1>
             <p class="breadcrumb">
-                <a href="{% url 'core:index' %}">Home</a> / 
+                <a href="{% url 'store:index' %}">Home</a> / 
                 <a href="{% url 'orders:cart' %}">Cart</a> / 
                 <span>Checkout</span>
             </p>
@@ -195,6 +195,6 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="{% static 'core/css/checkout.css' %}">
-<script src="{% static 'core/js/checkout.js' %}"></script>
+<link rel="stylesheet" href="{% static 'orders/css/checkout.css' %}">
+<script src="{% static 'orders/js/checkout.js' %}"></script>
 {% endblock %}

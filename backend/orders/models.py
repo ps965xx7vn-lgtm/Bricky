@@ -1,3 +1,11 @@
+"""Models for orders app.
+
+Contains models for:
+- Shopping cart management
+- Order processing and tracking
+- Customer information
+- Delivery management
+"""
 import uuid
 from decimal import Decimal
 from typing import Optional
@@ -12,8 +20,10 @@ from users.models import CustomUser
 
 
 class Customer(models.Model):
-    """
-    Model representing a customer
+    """Model representing a customer.
+    
+    Extends CustomUser with additional order-related
+    information like phone and address.
     """
     id: uuid.UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(
@@ -31,8 +41,10 @@ class Customer(models.Model):
         verbose_name_plural = 'Customers'
 
 class Order(models.Model):
-    """
-    Model representing an order
+    """Model representing an order.
+    
+    Tracks order lifecycle from creation to delivery
+    with status management and timeline tracking.
     """
     class StatusChoice(models.TextChoices):
         NEW = "N", "New order"
@@ -68,8 +80,10 @@ class Order(models.Model):
 
 
 class OrderElement(models.Model):
-    """
-    Model representing an item in an order
+    """Model representing an item in an order.
+    
+    Stores individual product quantities and prices
+    at the time of order placement.
     """
     order = models.ForeignKey(
         Order,
@@ -98,8 +112,13 @@ class OrderElement(models.Model):
 
 
 class Delivery(models.Model):
-    """
-    Model representing delivery information for an order
+    """Model representing delivery information for an order.
+    
+    Manages delivery logistics including:
+    - Delivery method and status
+    - Tracking information
+    - Recipient details
+    - Delivery costs and insurance
     """
     class DeliveryMethod(models.TextChoices):
         STANDARD = "standard", "Standard Delivery (5-7 days)"
@@ -169,3 +188,66 @@ class Delivery(models.Model):
             models.Index(fields=['order']),
         ]
 
+
+class Cart(models.Model):
+    """Model representing a shopping cart for a user."""
+    
+    id: uuid.UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="cart"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"Cart for {self.user.username}"
+
+    def get_total_price(self) -> Decimal:
+        """Calculate total cart value."""
+        return sum(item.get_total_price() for item in self.items.all())
+
+    def get_total_items(self) -> int:
+        """Get total number of items in cart."""
+        return sum(item.quantity for item in self.items.all())
+
+    class Meta:
+        verbose_name = 'Cart'
+        verbose_name_plural = 'Carts'
+
+
+class CartItem(models.Model):
+    """Model representing individual items in a cart."""
+    
+    id: uuid.UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="cart_items"
+    )
+    quantity: int = models.PositiveIntegerField(default=1)
+    price: Decimal = models.DecimalField(max_digits=10, decimal_places=2)
+    added_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.quantity}x {self.product.name}"
+
+    def get_total_price(self) -> Decimal:
+        """Calculate total price for this item."""
+        return self.price * self.quantity
+
+    class Meta:
+        verbose_name = 'Cart Item'
+        verbose_name_plural = 'Cart Items'
+        unique_together = ('cart', 'product')
+        indexes = [
+            models.Index(fields=["cart"]),
+            models.Index(fields=["product"]),
+        ]

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from orders.models import Customer, Order, OrderElement, Delivery
+from orders.models import Customer, Order, OrderElement, Delivery, Cart, CartItem
 
 
 class OrderElementInline(admin.TabularInline):
@@ -130,3 +130,46 @@ class OrderElementAdmin(admin.ModelAdmin):
     list_filter = ['order__status']
     search_fields = ['order__customer__user__username', 'product__name']
     readonly_fields = ['id']
+
+
+class CartItemInline(admin.TabularInline):
+    """Inline for cart items in cart admin."""
+    model = CartItem
+    extra = 0
+    readonly_fields = ['product', 'price', 'added_at', 'updated_at']
+    fields = ['product', 'quantity', 'price']
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    """Admin interface for Cart model."""
+    
+    list_display = ['user', 'get_total_items', 'get_total_price', 'created_at']
+    readonly_fields = ['created_at', 'updated_at']
+    search_fields = ['user__username', 'user__email']
+    inlines = [CartItemInline]
+
+    def get_total_items(self, obj):
+        """Get total number of items."""
+        return obj.get_total_items()
+    get_total_items.short_description = 'Items'
+
+    def get_total_price(self, obj):
+        """Get total price."""
+        return f'${obj.get_total_price()}'
+    get_total_price.short_description = 'Total Price'
+
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    """Admin interface for CartItem model."""
+    
+    list_display = ['product', 'cart', 'quantity', 'price', 'get_total_price', 'added_at']
+    list_filter = ['added_at', 'updated_at']
+    readonly_fields = ['added_at', 'updated_at']
+    search_fields = ['product__name', 'cart__user__username']
+
+    def get_total_price(self, obj):
+        """Get total price for item."""
+        return f'${obj.get_total_price()}'
+    get_total_price.short_description = 'Total'

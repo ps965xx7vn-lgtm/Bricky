@@ -169,7 +169,7 @@
                 <i class="fas fa-search"></i>
                 <h3>No products found</h3>
                 <p>Try adjusting your filters</p>
-                <a href="{% url 'core:index' %}" class="btn-primary">Clear Filters</a>
+                <a href="{% url 'store:index' %}" class="btn-primary">Clear Filters</a>
             </div>
             {% endif %}
         </div>
@@ -269,7 +269,7 @@
         </div>
     </section>
 
-<script src="{% static 'store/js/cart-actions.js' %}"></script>
+<script src="{% static 'orders/js/cart-actions.js' %}"></script>
 <script src="{% static 'core/js/index.js' %}"></script>
 {% endblock %}
 

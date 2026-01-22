@@ -4,7 +4,7 @@
 {% block title %}Register - Bricky LEGO Store{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'users/users.css' %}">
+<link rel="stylesheet" href="{% static 'users/css/users.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -88,11 +88,11 @@
             <span>or</span>
         </div>
 
-        <a href="{% url 'core:index' %}" class="btn-auth btn-secondary-auth">
+        <a href="{% url 'store:index' %}" class="btn-auth btn-secondary-auth">
             <i class="fas fa-arrow-left"></i> Back to Store
         </a>
     </div>
 </div>
 
-<script src="{% static 'users/users.js' %}"></script>
+<script src="{% static 'users/js/users.js' %}"></script>
 {% endblock %}

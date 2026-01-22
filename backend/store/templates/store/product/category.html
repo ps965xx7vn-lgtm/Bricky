@@ -4,7 +4,7 @@
 {% block title %}{{ category.title }} | Bricky LEGO Store{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/category.css' %}">
+<link rel="stylesheet" href="{% static 'store/css/category.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -23,7 +23,7 @@
                 <div class="category-hero-text">
                     <h1>{{ category.title }}</h1>
                     <p class="category-breadcrumb">
-                        <a href="{% url 'core:index' %}">Home</a> / 
+                        <a href="{% url 'store:index' %}">Home</a> / 
                         <a href="{% url 'store:shop' %}">Shop</a> / 
                         <span>{{ category.title }}</span>
                     </p>

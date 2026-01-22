@@ -1,97 +1,51 @@
-from django.shortcuts import  redirect
-from django.views.generic import ListView, TemplateView
-from django.db.models import Q
+"""Views for core app.
+
+Handles content pages (about, contact), legal pages (privacy, terms),
+and contact form submissions.
+"""
+from django.shortcuts import redirect
+from django.views.generic import TemplateView
 from django.contrib import messages
 
 from .models import ContactMessage
 from .forms import ContactForm
-from store.models import Product, Category
 
 
-# ============ HOME PAGE VIEW ============
+# ===== Content Pages =====
 
-class IndexView(ListView):
+class AboutView(TemplateView):
+    """Display the About Us page.
+    
+    Shows company information and mission statement.
     """
-    Store main page showing all products with filters and categories
-    """
-    model = Product
-    template_name = 'core/index.html'
-    context_object_name = 'object_list'
-    paginate_by = 12
-
-    def get_queryset(self):
-        queryset = Product.objects.filter(is_active=True).select_related('category')
-        
-        # Filter by category
-        category_slug = self.request.GET.get('category')
-        if category_slug:
-            queryset = queryset.filter(category__slug=category_slug)
-        
-        # Search filter
-        search = self.request.GET.get('search')
-        if search:
-            queryset = queryset.filter(
-                Q(name__icontains=search) | Q(description__icontains=search)
-            )
-        
-        # Price filter
-        min_price = self.request.GET.get('min_price')
-        max_price = self.request.GET.get('max_price')
-        
-        if min_price:
-            queryset = queryset.filter(price__gte=min_price)
-        if max_price:
-            queryset = queryset.filter(price__lte=max_price)
-        
-        # Sorting
-        sort = self.request.GET.get('sort', '-created_at')
-        queryset = queryset.order_by(sort)
-        
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['categories'] = Category.objects.all()
-        context['selected_category'] = self.request.GET.get('category', '')
-        context['search_query'] = self.request.GET.get('search', '')
-        context['min_price'] = self.request.GET.get('min_price', '')
-        context['max_price'] = self.request.GET.get('max_price', '')
-        context['sort'] = self.request.GET.get('sort', '-created_at')
-        
-        # Price range for filter
-        products = Product.objects.filter(is_active=True)
-        if products.exists():
-            context['price_max'] = products.order_by('-price').first().price
-            context['price_min'] = products.order_by('price').first().price
-        
-        return context
+    template_name = 'core/pages/about.html'
 
 
-# ============ LEGAL & INFO PAGES ============
+# ===== Legal Pages =====
+
 class PrivacyPolicyView(TemplateView):
-    """
-    View for displaying the Privacy Policy page
+    """Display the Privacy Policy page.
+    
+    Shows privacy policy and data handling information.
     """
     template_name = 'core/legal/privacy.html'
 
 
 class TermsOfServiceView(TemplateView):
-    """
-    View for displaying the Terms of Service page
+    """Display the Terms of Service page.
+    
+    Shows terms and conditions for using the service.
     """
     template_name = 'core/legal/terms.html'
 
 
-class AboutView(TemplateView):
-    """
-    View for displaying the About page
-    """
-    template_name = 'core/pages/about.html'
-
+# ===== Contact Page =====
 
 class ContactView(TemplateView):
-    """
-    View for displaying and handling the Contact page form
+    """Display and handle contact form submissions.
+    
+    GET: Display empty contact form
+    POST: Process and save contact message
     """
     template_name = 'core/pages/contact.html'
     

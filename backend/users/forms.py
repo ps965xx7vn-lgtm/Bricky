@@ -1,9 +1,23 @@
+"""Forms for users app.
+
+Handles user authentication, registration, profile editing,
+and password reset functionality.
+"""
 from django import forms
 from django.contrib.auth import get_user_model
 from phonenumber_field.formfields import PhoneNumberField
-User=get_user_model()
+
+User = get_user_model()
+
+
+# ===== Registration Form =====
 
 class UserRegisterForm(forms.ModelForm):
+    """Form for new user registration.
+    
+    Validates username uniqueness, email format,
+    and password confirmation matching.
+    """
     username = forms.CharField(
         label="Username",
         widget=forms.TextInput(attrs={'class': 'form-control','placeholder' : 'Enter your Username'}),
@@ -55,8 +69,14 @@ class UserRegisterForm(forms.ModelForm):
         return cleaned_data
 
 
+# ===== Profile Edit Form =====
+
 class ProfileEditForm(forms.ModelForm):
-    """Form for editing user profile with password change option"""
+    """Form for editing user profile.
+    
+    Allows updating profile information and optional password change.
+    Validates username/email uniqueness excluding current user.
+    """
     username = forms.CharField(
         label="Username",
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your username'}),
@@ -100,6 +120,7 @@ class ProfileEditForm(forms.ModelForm):
         }
 
     def clean_username(self):
+        """Validate username uniqueness."""
         username = self.cleaned_data.get('username')
         # Check if username is taken by another user
         if User.objects.filter(username=username).exclude(pk=self.instance.pk).exists():
@@ -107,6 +128,7 @@ class ProfileEditForm(forms.ModelForm):
         return username
 
     def clean_email(self):
+        """Validate email uniqueness."""
         email = self.cleaned_data.get('email')
         # Check if email is used by another user
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
@@ -114,6 +136,7 @@ class ProfileEditForm(forms.ModelForm):
         return email
 
     def clean(self):
+        """Validate password change fields."""
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
@@ -127,20 +150,15 @@ class ProfileEditForm(forms.ModelForm):
                 raise forms.ValidationError("Please fill in both password fields or leave both empty.")
         
         return cleaned_data
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email is already registered.")
-        return email
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if User.objects.filter(username=username).exists():
-            raise forms.ValidationError("This username is already taken.")
-        return username
 
+# ===== Login Form =====
 
 class UserLoginForm(forms.Form):
+    """Form for user login.
+    
+    Simple username/password authentication form.
+    """
     username = forms.CharField(
         label="Username",
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your Username'}),
@@ -157,8 +175,14 @@ class UserLoginForm(forms.Form):
     )
 
 
+# ===== Password Reset Forms =====
+
 class ForgotPasswordForm(forms.Form):
-    """Form for requesting password reset"""
+    """Form for requesting password reset.
+    
+    Validates that email exists in the system before
+    sending password reset link.
+    """
     email = forms.EmailField(
         label="Email",
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': "Enter your email address"}),
@@ -169,6 +193,7 @@ class ForgotPasswordForm(forms.Form):
     )
 
     def clean_email(self):
+        """Validate email exists in system."""
         email = self.cleaned_data.get('email')
         if not User.objects.filter(email=email).exists():
             raise forms.ValidationError("This email is not registered with us.")
@@ -176,7 +201,11 @@ class ForgotPasswordForm(forms.Form):
 
 
 class ResetPasswordForm(forms.Form):
-    """Form for resetting password with new password"""
+    """Form for setting new password.
+    
+    Used after clicking password reset link.
+    Validates password confirmation matching.
+    """
     password = forms.CharField(
         label="New Password",
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': "Enter your new password"}),

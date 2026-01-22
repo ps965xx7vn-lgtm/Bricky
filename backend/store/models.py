@@ -1,12 +1,21 @@
+"""Models for store app.
+
+Contains models for:
+- Product catalog with categories
+- Product reviews and ratings
+"""
 import uuid
 
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 from users.models import CustomUser
 
 class Category(models.Model):
-    """
-    Model representing a product category
+    """Model representing a product category.
+    
+    Categories organize products and include images
+    for visual representation in the catalog.
     """
     id: uuid.UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     picture = models.ImageField(blank=True, upload_to="categories", default="user_pictures/default.png")
@@ -24,6 +33,14 @@ class Category(models.Model):
             models.Index(fields=["title"])
         ]
 class Product(models.Model):
+    """Model representing a product.
+    
+    Contains product information including:
+    - Basic details (name, description, price)
+    - Stock management
+    - Status (new, old, coming soon)
+    - Category relationship
+    """
     class StatusChoice(models.TextChoices):
         NEW = "N", "New product"
         OLD = "O", "Old product"
@@ -66,68 +83,46 @@ class Product(models.Model):
         ordering = ['-created_at']
 
 
-class Cart(models.Model):
+class Review(models.Model):
     """
-    Model representing a shopping cart for a user
+    Model for product reviews.
     """
-    id: uuid.UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(
-        CustomUser,
-        on_delete=models.CASCADE,
-        related_name="cart"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self) -> str:
-        return f"Cart for {self.user.username}"
-
-    def get_total_price(self) -> Decimal:
-        """Calculate total cart value"""
-        return sum(item.get_total_price() for item in self.items.all())
-
-    def get_total_items(self) -> int:
-        """Get total number of items in cart"""
-        return sum(item.quantity for item in self.items.all())
-
-    class Meta:
-        verbose_name = 'Cart'
-        verbose_name_plural = 'Carts'
-
-
-class CartItem(models.Model):
-    """
-    Model representing individual items in a cart
-    """
-    id: uuid.UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cart = models.ForeignKey(
-        Cart,
-        on_delete=models.CASCADE,
-        related_name="items"
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name="cart_items"
+        related_name='reviews'
     )
-    quantity: int = models.PositiveIntegerField(default=1)
-    price: Decimal = models.DecimalField(max_digits=10, decimal_places=2)
-    added_at = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    title = models.CharField(max_length=255, db_index=True)
+    content = models.TextField()
+    rating = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        help_text='Rating from 1 to 5 stars'
+    )
+    is_approved = models.BooleanField(default=True, db_index=True)
+    helpful_count = models.PositiveIntegerField(default=0)
+    unhelpful_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.quantity}x {self.product.name}"
-
-    def get_total_price(self) -> Decimal:
-        """Calculate total price for this item"""
-        return self.price * self.quantity
+        return f"Review of {self.product.name} by {self.author.username}"
 
     class Meta:
-        verbose_name = 'Cart Item'
-        verbose_name_plural = 'Cart Items'
-        unique_together = ('cart', 'product')
+        verbose_name = 'Product Review'
+        verbose_name_plural = 'Product Reviews'
+        ordering = ['-created_at']
         indexes = [
-            models.Index(fields=["cart"]),
-            models.Index(fields=["product"]),
+            models.Index(fields=['product']),
+            models.Index(fields=['author']),
+            models.Index(fields=['rating']),
+            models.Index(fields=['is_approved']),
+            models.Index(fields=['created_at']),
         ]
+        unique_together = [['product', 'author']]
 

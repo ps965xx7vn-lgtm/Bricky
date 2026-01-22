@@ -1,3 +1,8 @@
+"""Models for users app.
+
+Contains custom user model extending Django's AbstractUser
+with additional fields for profile management.
+"""
 import uuid
 from typing import Optional
 
@@ -7,8 +12,14 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class CustomUser(AbstractUser):
-    """
-    Manager for custom model user
+    """Custom user model.
+    
+    Extends Django's AbstractUser with:
+    - UUID primary key
+    - Email verification system
+    - Profile picture
+    - Phone number
+    - Telegram ID for bot integration
     """
     id: uuid.UUID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email: str = models.EmailField(unique=True, )

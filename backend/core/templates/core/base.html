@@ -37,14 +37,14 @@
     <nav class="navbar">
         <div class="container">
             <div class="logo">
-                <a href="{% url 'core:index' %}" class="brand-logo">
+                <a href="{% url 'store:index' %}" class="brand-logo">
                     <img src="{% static 'img/lego-logo.png' %}" alt="Bricky LEGO Store" class="logo-img">
                 </a>
             </div>
             <ul class="nav-links">
-                <li><a href="{% url 'core:index' %}">Home</a></li>
+                <li><a href="{% url 'store:index' %}">Home</a></li>
                 <li><a href="{% url 'store:shop' %}">Shop</a></li>
-                <li><a href="{% url 'core:index' %}#categories">Categories</a></li>
+                <li><a href="{% url 'store:index' %}#categories">Categories</a></li>
                 <li><a href="{% url 'store:new_releases' %}">New Releases</a></li>
                 <li><a href="{% url 'core:about' %}">About</a></li>
                 {% if user.is_staff %}
@@ -77,9 +77,9 @@
                 <div class="footer-col">
                     <h3>Shop</h3>
                     <ul>
-                        <li><a href="{% url 'core:index' %}">Home</a></li>
+                        <li><a href="{% url 'store:index' %}">Home</a></li>
                         <li><a href="{% url 'store:shop' %}">Shop</a></li>
-                        <li><a href="{% url 'core:index' %}#categories">Categories</a></li>
+                        <li><a href="{% url 'store:index' %}#categories">Categories</a></li>
                         <li><a href="{% url 'store:new_releases' %}">New Releases</a></li>
                     </ul>
                 </div>

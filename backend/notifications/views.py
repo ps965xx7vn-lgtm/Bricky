@@ -1,108 +1,135 @@
-from django.views.generic import TemplateView, View, CreateView
+"""Views for notifications app.
+
+Handles newsletter subscription and unsubscription via both
+traditional forms and AJAX requests.
+"""
+from django.views.generic import TemplateView, View
 from django.http import JsonResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
 import json
 
-from core.models import NewsletterSubscription
-from core.forms import NewsletterSubscriptionForm
-# ============ NEWSLETTER VIEWS ============
-class NewsletterSubscribeView(CreateView):
-    """
-    View for subscribing to the newsletter
-    """
-    model = NewsletterSubscription
-    form_class = NewsletterSubscriptionForm
-    template_name = 'notifications/subscribe/newsletter_subscribe.html'
-    success_url = reverse_lazy('notifications:newsletter_success')
-
-    def form_valid(self, form):
-        """Handle successful form submission"""
-        response = super().form_valid(form)
-        messages.success(
-            self.request,
-            'Thank you for subscribing to our newsletter! You\'ll receive updates soon.'
-        )
-        return response
-
-    def form_invalid(self, form):
-        """Handle form errors"""
-        for field, errors in form.errors.items():
-            for error in errors:
-                messages.error(self.request, f'{error}')
-        return self.render_to_response(self.get_context_data(form=form))
+from notifications.models import NewsletterSubscription
+from notifications.forms import NewsletterSubscriptionForm
 
 
-class NewsletterSubscribeAjaxView(View):
+# ===== Newsletter Views =====
+
+class NewsletterSubscribeView(View):
+    """Handle newsletter subscriptions.
+    
+    Supports both traditional form submissions and AJAX requests.
+    
+    GET: Display subscription form
+    POST: Process subscription (form or AJAX)
     """
-    AJAX view for subscribing to the newsletter
-    """
+    
+    def get(self, request):
+        """Display newsletter subscription form."""
+        return TemplateView.as_view(
+            template_name='notifications/subscribe/newsletter_subscribe.html',
+            extra_context={'form': NewsletterSubscriptionForm()}
+        )(request)
+    
     def post(self, request):
-        """Handle AJAX POST request"""
+        """Process subscription request (form or AJAX)."""
+        # Check if AJAX request
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        
         try:
-            data = json.loads(request.body)
-            email = data.get('email', '').strip().lower()
-
+            # Get email from JSON or POST data
+            if is_ajax:
+                data = json.loads(request.body)
+                email = data.get('email', '').strip().lower()
+            else:
+                email = request.POST.get('email', '').strip().lower()
+            
             if not email:
-                return JsonResponse({
-                    'success': False,
-                    'message': 'Email is required.'
-                }, status=400)
-
+                return self._response(False, 'Email is required.', is_ajax, 400)
+            
             # Check if already subscribed
             if NewsletterSubscription.objects.filter(email=email, status='active').exists():
-                return JsonResponse({
-                    'success': False,
-                    'message': 'This email is already subscribed to our newsletter.'
-                }, status=400)
-
-            # Create subscription
+                return self._response(
+                    False,
+                    'This email is already subscribed.',
+                    is_ajax,
+                    400
+                )
+            
+            # Create or reactivate subscription
             subscription, created = NewsletterSubscription.objects.get_or_create(
                 email=email,
                 defaults={'status': 'active'}
             )
-
+            
             if not created and subscription.status == 'unsubscribed':
-                # Reactivate unsubscribed email
                 subscription.status = 'active'
                 subscription.unsubscribed_at = None
                 subscription.save()
-
-            return JsonResponse({
-                'success': True,
-                'message': 'Thank you for subscribing to our newsletter!'
-            }, status=201)
-
+            
+            return self._response(
+                True,
+                'Thank you for subscribing to our newsletter!',
+                is_ajax,
+                201 if created else 200
+            )
+        
         except json.JSONDecodeError:
-            return JsonResponse({
-                'success': False,
-                'message': 'Invalid request format.'
-            }, status=400)
+            return self._response(False, 'Invalid request format.', is_ajax, 400)
         except Exception as e:
+            return self._response(
+                False,
+                'An error occurred. Please try again.',
+                is_ajax,
+                500
+            )
+    
+    def _response(self, success, message, is_ajax, status=200):
+        """Unified response for AJAX and form submissions"""
+        if is_ajax:
             return JsonResponse({
-                'success': False,
-                'message': 'An error occurred. Please try again.'
-            }, status=500)
+                'success': success,
+                'message': message
+            }, status=status)
+        
+        # Form submission - redirect with message
+        if success:
+            messages.success(self.request, message)
+            return TemplateView.as_view(
+                template_name='notifications/subscribe/newsletter_success.html',
+                extra_context={'title': 'Newsletter Subscription Successful'}
+            )(self.request)
+        else:
+            messages.error(self.request, message)
+            return TemplateView.as_view(
+                template_name='notifications/subscribe/newsletter_subscribe.html',
+                extra_context={'form': NewsletterSubscriptionForm()}
+            )(self.request)
 
-class NewsletterUnsubscribeAjaxView(View):
+
+class NewsletterUnsubscribeView(View):
+    """Handle newsletter unsubscriptions.
+    
+    AJAX-only endpoint for unsubscribing from newsletter.
+    Updates subscription status and timestamp.
     """
-    AJAX view for unsubscribing from the newsletter
-    """
+    
     def post(self, request):
-        """Handle AJAX POST request to unsubscribe"""
+        """Handle unsubscription"""
         try:
             data = json.loads(request.body)
             email = data.get('email', '').strip().lower()
-
+            
             if not email:
                 return JsonResponse({
                     'success': False,
                     'message': 'Email is required.'
                 }, status=400)
-
+            
             # Find and unsubscribe
             try:
                 subscription = NewsletterSubscription.objects.get(email=email)
+                
                 if subscription.status == 'active':
                     from django.utils import timezone
                     subscription.status = 'unsubscribed'
@@ -111,19 +138,20 @@ class NewsletterUnsubscribeAjaxView(View):
                     
                     return JsonResponse({
                         'success': True,
-                        'message': 'You have been unsubscribed from our newsletter.'
-                    }, status=200)
+                        'message': 'You have been unsubscribed.'
+                    })
                 else:
                     return JsonResponse({
                         'success': False,
                         'message': 'This email is not currently subscribed.'
                     }, status=400)
+            
             except NewsletterSubscription.DoesNotExist:
                 return JsonResponse({
                     'success': False,
-                    'message': 'This email is not found in our newsletter list.'
+                    'message': 'Email not found in our newsletter list.'
                 }, status=404)
-
+        
         except json.JSONDecodeError:
             return JsonResponse({
                 'success': False,
@@ -134,14 +162,3 @@ class NewsletterUnsubscribeAjaxView(View):
                 'success': False,
                 'message': 'An error occurred. Please try again.'
             }, status=500)
-
-class NewsletterSuccessView(TemplateView):
-    """
-    Success page after newsletter subscription
-    """
-    template_name = 'notifications/subscribe/newsletter_success.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Newsletter Subscription Successful'
-        return context
